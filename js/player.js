@@ -17,16 +17,16 @@ export function createPlayer(params) {
   const replayBtn = document.getElementById('btn-replay');
   const nextBtn = document.getElementById('btn-next');
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   let currentIframe = null;
 
   function renderStage(clip) {
-    // Remove previous content (but keep the hint overlay)
     currentIframe = null;
     Array.from(stage.children).forEach(el => {
       if (el !== hint) el.remove();
     });
 
-    if (clip.source === 'youtube') {
+    if (clip.source === 'youtube' || !isMobile) {
       const iframe = document.createElement('iframe');
       iframe.id = 'clip-iframe';
       iframe.src = getEmbedUrl(clip);
