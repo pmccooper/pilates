@@ -1,3 +1,8 @@
+---
+name: add-pilates-video
+description: Add a new Instagram or YouTube clip to the Pilates workout library. Fetches the page, auto-generates tags and title, appends to clips.json, and pushes to GitHub.
+---
+
 # add-pilates-video
 
 Add a new video clip to the Pilates workout library.
