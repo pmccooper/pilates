@@ -32,19 +32,11 @@
       </button>
     </div>
 
-    <!-- Video stage -->
-    <div class="player-stage">
-      <iframe
-        id="clip-iframe"
-        src=""
-        title="Workout clip"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-
+    <!-- Video stage — content injected by player.js -->
+    <div class="player-stage" id="player-stage">
       <!-- Overlaid hint -->
-      <div class="hint" hidden>
-        <span></span>
+      <div class="hint" id="clip-hint" hidden>
+        <span id="hint-movements"></span>
         <span class="dot"></span>
         <span class="sets">3 sets of 20 each</span>
       </div>

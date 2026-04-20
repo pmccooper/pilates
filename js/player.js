@@ -6,26 +6,61 @@ export function createPlayer(params) {
   let isShuffled = params.get('shuffle') === '1';
   const selectedTags = (params.get('tags') || '').split(',').filter(Boolean);
 
-  const iframe = document.getElementById('clip-iframe');
+  const stage = document.getElementById('player-stage');
+  const hint = document.getElementById('clip-hint');
+  const hintMovements = document.getElementById('hint-movements');
   const counter = document.querySelector('.counter');
   const cur = counter?.querySelector('.cur');
   const total = counter?.querySelector('.total');
-  const hint = document.querySelector('.hint');
   const shuffleBtn = document.querySelector('.shuffle-btn');
   const prevBtn = document.getElementById('btn-prev');
   const replayBtn = document.getElementById('btn-replay');
   const nextBtn = document.getElementById('btn-next');
 
+  let currentIframe = null;
+
+  function renderStage(clip) {
+    // Remove previous content (but keep the hint overlay)
+    currentIframe = null;
+    Array.from(stage.children).forEach(el => {
+      if (el !== hint) el.remove();
+    });
+
+    if (clip.source === 'youtube') {
+      const iframe = document.createElement('iframe');
+      iframe.id = 'clip-iframe';
+      iframe.src = getEmbedUrl(clip);
+      iframe.title = clip.title;
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+      iframe.allowFullscreen = true;
+      stage.insertBefore(iframe, hint);
+      currentIframe = iframe;
+    } else {
+      const card = document.createElement('div');
+      card.className = 'clip-card';
+      card.innerHTML = `
+        <p class="clip-card-title">${clip.title}</p>
+        <div class="clip-card-tags">${clip.tags.map(t =>
+          `<span class="clip-card-tag">${t}</span>`
+        ).join('')}</div>
+        <a class="clip-card-open" href="${clip.url}" target="_blank" rel="noopener">
+          Open in Instagram <span style="font-size:18px">↗</span>
+        </a>`;
+      stage.insertBefore(card, hint);
+    }
+  }
+
   function render() {
     if (!clips.length) return;
     const clip = clips[index];
-    iframe.src = getEmbedUrl(clip);
+
+    renderStage(clip);
 
     if (cur) cur.textContent = String(index + 1).padStart(2, '0');
     if (total) total.textContent = String(clips.length).padStart(2, '0');
 
     if (clip.movements) {
-      hint.querySelector('span:first-child').textContent = `${clip.movements} Movement${clip.movements !== 1 ? 's' : ''}`;
+      hintMovements.textContent = `${clip.movements} Movement${clip.movements !== 1 ? 's' : ''}`;
       hint.hidden = false;
     } else {
       hint.hidden = true;
@@ -41,7 +76,15 @@ export function createPlayer(params) {
 
   prevBtn?.addEventListener('click', () => goTo(index - 1));
   nextBtn?.addEventListener('click', () => goTo(index + 1));
-  replayBtn?.addEventListener('click', () => { iframe.src = iframe.src; });
+  replayBtn?.addEventListener('click', () => {
+    if (currentIframe) {
+      currentIframe.src = currentIframe.src;
+    } else {
+      // For Instagram cards, re-open the link
+      const link = stage.querySelector('.clip-card-open');
+      if (link) link.click();
+    }
+  });
 
   shuffleBtn?.addEventListener('click', () => {
     isShuffled = !isShuffled;
