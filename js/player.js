@@ -36,17 +36,23 @@ export function createPlayer(params) {
       stage.insertBefore(iframe, hint);
       currentIframe = iframe;
     } else {
-      const card = document.createElement('div');
-      card.className = 'clip-card';
-      card.innerHTML = `
-        <p class="clip-card-title">${clip.title}</p>
-        <div class="clip-card-tags">${clip.tags.map(t =>
-          `<span class="clip-card-tag">${t}</span>`
-        ).join('')}</div>
-        <a class="clip-card-open" href="${clip.url}" target="_blank" rel="noopener">
-          Open in Instagram <span style="font-size:18px">↗</span>
-        </a>`;
-      stage.insertBefore(card, hint);
+      // Official Instagram embed — works on mobile when logged in
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:flex-start;justify-content:center;padding:8px 0;background:#000;';
+      wrapper.innerHTML = `
+        <blockquote
+          class="instagram-media"
+          data-instgrm-permalink="${clip.url}"
+          data-instgrm-version="14"
+          style="width:100%;max-width:480px;margin:0;">
+        </blockquote>`;
+      stage.insertBefore(wrapper, hint);
+      // Process the new embed — script may not be ready yet on first load
+      if (window.instgrm) {
+        window.instgrm.Embeds.process();
+      } else {
+        window.addEventListener('load', () => window.instgrm?.Embeds.process(), { once: true });
+      }
     }
   }
 
