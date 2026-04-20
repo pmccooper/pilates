@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Pilates — Choose your focus</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+
+    <header class="app-header">
+      <p class="wordmark">Pilates · Daily Practice</p>
+      <h1 class="display">Shape today's <em>session</em>.</h1>
+      <p class="subtitle">Pick the areas you want to work. We'll build a flow from your library.</p>
+    </header>
+
+    <main class="app-main">
+
+      <div class="section-label">
+        <span>Focus Tags</span>
+        <span class="count">Multi-select</span>
+      </div>
+
+      <div class="tag-grid" role="group" aria-label="Workout focus tags" id="tag-grid">
+      </div>
+
+      <div class="section-label">
+        <span>Order</span>
+      </div>
+
+      <div class="toggle-row">
+        <div class="label">
+          <span class="label-title">Shuffle clips</span>
+          <span class="label-sub">Randomize playback order</span>
+        </div>
+        <button class="toggle" type="button" role="switch" aria-pressed="true" aria-label="Shuffle clips"></button>
+      </div>
+
+    </main>
+
+    <!-- Fixed bottom CTA -->
+    <div class="cta-bar">
+      <div class="cta-meta">
+        <div class="left" id="clip-count"><strong>0</strong> clips matched</div>
+      </div>
+      <button class="btn-primary" type="button" id="start-btn" disabled>
+        Start Workout <span class="arrow">→</span>
+      </button>
+    </div>
+
+  </div>
+  <script type="module">
+    import { loadClips, filterClips, getAllTags } from './js/clips.js';
+
+    let allClips = [];
+    let selectedTags = [];
+
+    const tagGrid = document.getElementById('tag-grid');
+    const clipCount = document.getElementById('clip-count');
+    const startBtn = document.getElementById('start-btn');
+    const shuffleToggle = document.querySelector('.toggle');
+
+    function updateCount() {
+      const n = filterClips(allClips, selectedTags).length;
+      clipCount.innerHTML = `<strong>${n}</strong> clip${n !== 1 ? 's' : ''} matched`;
+      startBtn.disabled = n === 0;
+    }
+
+    tagGrid.addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      const tag = chip.dataset.tag;
+      const pressed = chip.getAttribute('aria-pressed') === 'true';
+      chip.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+      if (pressed) {
+        selectedTags = selectedTags.filter(t => t !== tag);
+      } else {
+        selectedTags.push(tag);
+      }
+      updateCount();
+    });
+
+    shuffleToggle?.addEventListener('click', () => {
+      const next = shuffleToggle.getAttribute('aria-pressed') !== 'true';
+      shuffleToggle.setAttribute('aria-pressed', next ? 'true' : 'false');
+    });
+
+    startBtn.addEventListener('click', () => {
+      const shuffle = shuffleToggle?.getAttribute('aria-pressed') === 'true' ? '1' : '0';
+      const params = new URLSearchParams({ tags: selectedTags.join(','), shuffle });
+      window.location.href = `player.html?${params}`;
+    });
+
+    loadClips().then(clips => {
+      allClips = clips;
+      tagGrid.innerHTML = getAllTags(clips).map(tag =>
+        `<button class="chip" type="button" aria-pressed="false" data-tag="${tag}">
+          <span class="chip-dot"></span>${tag.charAt(0).toUpperCase() + tag.slice(1)}
+        </button>`
+      ).join('');
+      updateCount();
+    });
+  </script>
+</body>
+</html>

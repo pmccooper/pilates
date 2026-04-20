@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Pilates — Player</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- Slim top bar -->
+    <div class="player-top">
+      <a class="icon-btn back" href="index.html" aria-label="Back">
+        <span class="chev">←</span><span>Back</span>
+      </a>
+
+      <div class="counter" aria-label="Clip 3 of 12">
+        <span class="cur">03</span>
+        <span class="slash">/</span>
+        <span class="total">12</span>
+      </div>
+
+      <button class="icon-btn shuffle-btn" type="button" role="switch" aria-pressed="true" aria-label="Shuffle">
+        <!-- Minimal shuffle glyph -->
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M2.5 5.5h3.2c1 0 1.9.45 2.5 1.22l3.6 4.56c.6.77 1.5 1.22 2.5 1.22H18M14.5 9.5 18 6M14.5 2.5 18 6M2.5 14.5h3.2c1 0 1.9-.45 2.5-1.22l.8-1.02M11.8 7.74l.8-1.02c.6-.77 1.5-1.22 2.5-1.22H18M14.5 17.5 18 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Video stage -->
+    <div class="player-stage">
+      <iframe
+        id="clip-iframe"
+        src=""
+        title="Workout clip"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+
+      <!-- Overlaid hint -->
+      <div class="hint" hidden>
+        <span></span>
+        <span class="dot"></span>
+        <span class="sets">3 sets of 20 each</span>
+      </div>
+    </div>
+
+    <!-- Transport -->
+    <div class="transport">
+      <button class="btn-ghost" type="button" id="btn-prev">
+        <span class="ic">←</span> Prev
+      </button>
+      <button class="btn-ghost" type="button" id="btn-replay" aria-label="Replay">
+        <span class="ic">↺</span> Replay
+      </button>
+      <button class="btn-next" type="button" id="btn-next">
+        Next <span class="ic">→</span>
+      </button>
+    </div>
+
+  </div>
+  <script type="module">
+    import { createPlayer } from './js/player.js';
+    createPlayer(new URLSearchParams(window.location.search));
+  </script>
+</body>
+</html>
