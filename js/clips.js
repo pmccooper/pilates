@@ -1,5 +1,5 @@
 export async function loadClips() {
-  const res = await fetch('./clips.json');
+  const res = await fetch(`./clips.json?v=${Date.now()}`);
   if (!res.ok) throw new Error('Failed to load clips.json');
   return res.json();
 }
